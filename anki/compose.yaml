@@ -1,4 +1,4 @@
-- services:
+services:
   anki-server:
     restart: unless-stopped
     build:

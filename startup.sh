@@ -1,11 +1,9 @@
 #!/bin/bash
 
-cd /home/user/docker
-
 for FILE in *; do
     if [ -d "$FILE" ]; then
         cd "$FILE"
-
+        echo "Starting $FILE"
         docker compose up -d
 
         cd ..
