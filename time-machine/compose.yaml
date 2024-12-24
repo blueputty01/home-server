@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   timemachine:
     network_mode: "host"
@@ -17,7 +16,7 @@ services:
       - "139:139"
       - "445:445"
     volumes:
-      - /path/to/your/timemachine/volume:/opt/timemachine
+      - backups/volume:/opt/timemachine
     tmpfs:
       - /run/samba
     ulimits:
