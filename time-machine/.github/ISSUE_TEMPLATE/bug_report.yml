@@ -1,0 +1,99 @@
+name: Bug Report
+description: Report a bug with this Docker image.
+title: '[Bug]: '
+assignees:
+  - mbentley
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Read Me First!
+
+        Thanks for using my image! Hopefully it's helpful to you. You are about to report a bug you found related to the packaging or function of this Docker image, not the software itself. If you have a problem with the software that is not related to this Docker image, check out the [Samba mailing lists](https://www.samba.org/samba/archives.html). If you're not sure if it is a problem with the Docker image or the software, file an issue here and I can assist in determining where the responsibility lies. Apple has changed how Time Machine functions behind the scenes a number of times and it requires samba configuration changes to resolve but a lack of documentation makes it difficult to track down.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: |
+        Please provide a clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: |
+        A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: |
+        Steps to reproduce the behavior with as much detail as possile.
+      placeholder: |
+        1.
+        2.
+        3.
+        4.
+    validations:
+      required: true
+  - type: textarea
+    id: docker-run
+    attributes:
+      label: How You're Launching the Container
+      description: |
+        Include your complete `docker run` or compose file to make analysis easier.
+      render: plain
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Container Logs
+      description: |
+        Collect logs by using something similar to `docker logs timemachine >& output.log` if needed and attach them or copy out the relevant portions of the error. When in doubt, do both. I can't help without logs!
+      placeholder: |
+        logs
+        go
+        here
+      render: plain
+    validations:
+      required: true
+  - type: textarea
+    id: maclogs
+    attributes:
+      label: Time Machine client Logs
+      description: |
+        If you can run the container but backups fail, collect logs from the client by using something similar to `printf '\e[3J' && log show --predicate 'subsystem == "com.apple.TimeMachine"' --info --last 6h | grep -F 'eMac' | grep -Fv 'etat' | awk -F']' '{print substr($0,1,19), $NF}'`, adjusting the time from `6h` to something resonable to catch the error at least once and attach them.  I can't help without logs!
+      placeholder: |
+        logs
+        go
+        here
+      render: plain
+    validations:
+      required: false
+  - type: textarea
+    id: host-info
+    attributes:
+      label: Additional host information
+      description: |
+        Provide additional information about your host (docker engine info, host OS). This is optional but can be helpful if your backups are failing.
+      placeholder: |
+        # docker info
+        <output goes here>
+
+        # cat /etc/os-release
+        <output goes here>
+      render: plain
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context about the problem here.
+    validations:
+      required: false

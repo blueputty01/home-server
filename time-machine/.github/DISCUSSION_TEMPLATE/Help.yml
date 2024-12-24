@@ -1,0 +1,96 @@
+title: "[Help]: "
+labels: ["Help"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Read Me First!
+
+        Thanks for using my image! Hopefully it's helpful to you. If you're looking for help with this container image, related to the packaging or function of this Docker image, you're in the right place. If you are certain you have found a bug in the packaging, configuration, or general function of this image, go ahead and create a [Bug Report Issue](https://github.com/mbentley/docker-timemachine/issues/new/choose). In order to better help you, it would be great if you can provide as much information as you can below.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe Your Issue or Question
+      description: |
+        Please provide a clear and concise description of what you're trying to achieve and what the problem is that you're facing.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: |
+        A clear and concise description of what you expect to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: |
+        Steps to reproduce the unexpected behavior with as much detail as possible.
+      placeholder: |
+        1.
+        2.
+        3.
+        4.
+    validations:
+      required: true
+  - type: textarea
+    id: docker-run
+    attributes:
+      label: How You're Launching the Container
+      description: |
+        Include your complete `docker run` or compose file to make analysis easier.
+      render: plain
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Container Logs
+      description: |
+        Collect logs by using something similar to `docker logs timemachine >& output.log` if needed and attach them or copy out the relevant portions of the error. When in doubt, do both. I can't help without logs!
+      placeholder: |
+        logs
+        go
+        here
+      render: plain
+    validations:
+      required: true
+  - type: textarea
+    id: maclogs
+    attributes:
+      label: Time Machine client Logs
+      description: |
+        If you can run the container but backups fail, collect logs from the client by using something similar to `printf '\e[3J' && log show --predicate 'subsystem == "com.apple.TimeMachine"' --info --last 6h | grep -F 'eMac' | grep -Fv 'etat' | awk -F']' '{print substr($0,1,19), $NF}'`, adjusting the time from `6h` to something resonable to catch the error at least once and attach them.  I can't help without logs!
+      placeholder: |
+        logs
+        go
+        here
+      render: plain
+    validations:
+      required: false
+  - type: textarea
+    id: host-info
+    attributes:
+      label: Additional host information
+      description: |
+        Provide additional information about your host (docker engine info, host OS). This is optional but can be helpful if your backups are failing.
+      placeholder: |
+        # docker info
+        <output goes here>
+
+        # cat /etc/os-release
+        <output goes here>
+      render: plain
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context about the issue here.
+    validations:
+      required: false
