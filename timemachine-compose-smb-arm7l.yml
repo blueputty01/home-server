@@ -1,0 +1,38 @@
+version: "3.7"
+services:
+  timemachine:
+    hostname: timemachine
+    mac_address: "AA:BB:CC:DD:EE:FF"
+    networks:
+      timemachine:
+        ipv4_address: 192.168.1.100
+    environment:
+      - TM_USERNAME=timemachine
+      - TM_GROUPNAME=timemachine
+      - PASSWORD=timemachine
+      - TM_UID=1000
+      - TM_GID=1000
+      - SET_PERMISSIONS=false
+      - VOLUME_SIZE_LIMIT=0
+    restart: unless-stopped
+    volumes:
+      - /path/to/your/timemachine/volume:/opt/timemachine
+    tmpfs:
+      - /run/samba
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    container_name: timemachine
+    image: mbentley/timemachine:smb-armv7l
+
+networks:
+  timemachine:
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          ip_range: 192.168.1.0/24
+          gateway: 192.168.1.1
