@@ -1,5 +1,7 @@
 # Stacks
 
+Refer to README under each stack for detailed operation information.
+
 ## Time machine
 
 Uses [mbentley/time-machine](https://github.com/mbentley/docker-timemachine)
@@ -13,6 +15,10 @@ Uses [immich](https://immich.app/)
 ## Budget
 
 Uses [Actual](https://github.com/actualbudget/actual-server)
+
+## Smart home
+
+Uses [ESPHome](https://esphome.io/guides/getting_started_command_line)
 
 
 # Development
