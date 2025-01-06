@@ -6,17 +6,32 @@
 # The compose file on main may not be compatible with the latest release.
 #
 
-networks:
-  frontend:
-  backend:
-
+# networks:
+#   frontend:
+#   backend:
+#
 services:
   tailscale:
+    # container_name: tailscale
     image: tailscale/tailscale:latest
     hostname: photos
     env_file: 
-      
-  immich-server:
+      - .tailscale.env
+    environment:
+      - TS_SERVE_CONFIG=/serve-config.json
+      - TS_STATE_DIR=/var/lib/tailscale
+      # - TS_USERSPACE=false
+    volumes:
+      - ${PWD}/tailscale/state:/var/lib/tailscale
+      - ./serve-config.json:/serve-config.json
+      # - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
+    # networks:
+    #   - frontend
+
+  immich-server: # 2283
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     # extends:
@@ -28,17 +43,17 @@ services:
       - /etc/localtime:/etc/localtime:ro
     env_file:
       - .env
-    ports:
-      - '2283:2283'
     depends_on:
       - redis
       - database
     restart: always
     healthcheck:
       disable: false
-    networks:
-      - frontend
-      - backend
+    network_mode: service:tailscale
+    # https://tailscale.com/blog/docker-tailscale-guide
+    # networks:
+    #   - frontend
+    #   - backend
   immich-machine-learning:
     container_name: immich_machine_learning
     # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
@@ -54,8 +69,8 @@ services:
     restart: always
     healthcheck:
       disable: false
-    networks:
-      - backend
+    # networks:
+    #   - backend
 
   redis:
     container_name: immich_redis
@@ -63,8 +78,8 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
-    networks:
-      - backend
+    # networks:
+    #   - backend
 
   database:
     container_name: immich_postgres
@@ -96,8 +111,8 @@ services:
       -c shared_buffers=512MB
       -c wal_compression=on
     restart: always
-    networks:
-      - backend
+    # networks:
+    #   - backend
 
 volumes:
   model-cache:
