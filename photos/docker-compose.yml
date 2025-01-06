@@ -9,28 +9,13 @@
 # networks:
 #   frontend:
 #   backend:
-#
+
 services:
   tailscale:
-    # container_name: tailscale
-    image: tailscale/tailscale:latest
+    extends:
+      file: ../tailscale.yaml
+      service: tailscale
     hostname: photos
-    env_file: 
-      - .tailscale.env
-    environment:
-      - TS_SERVE_CONFIG=/serve-config.json
-      - TS_STATE_DIR=/var/lib/tailscale
-      # - TS_USERSPACE=false
-    volumes:
-      - ${PWD}/tailscale/state:/var/lib/tailscale
-      - ./serve-config.json:/serve-config.json
-      # - /dev/net/tun:/dev/net/tun
-    cap_add:
-      - net_admin
-      - sys_module
-    # networks:
-    #   - frontend
-
   immich-server: # 2283
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
