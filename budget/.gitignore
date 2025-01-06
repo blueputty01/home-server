@@ -31,3 +31,6 @@ dist
 .idea
 /coverage
 /coverage-e2e
+
+# custom
+.env
