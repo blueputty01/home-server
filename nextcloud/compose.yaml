@@ -15,12 +15,12 @@ services:
       APACHE_PORT: 11000
       APACHE_IP_BINDING: 127.0.0.1
       SKIP_DOMAIN_VALIDATION: true
-      NEXTCLOUD_DATADIR: 
+      NEXTCLOUD_DATADIR: ${HDD_DATA_LOC}/nextcloud 
   caddy:
     image: caddy:alpine
     restart: unless-stopped
     environment:
-      NC_DOMAIN: 
+      NC_DOMAIN: nextcloud.${TAILNET}
     volumes:
       - type: bind
         source: ./Caddyfile
@@ -42,7 +42,7 @@ services:
   tailscale:
     image: tailscale/tailscale:latest
     environment:
-      TS_HOSTNAME: 
+      TS_HOSTNAME: nextcloud 
       TS_AUTH_KEY: 
       TS_EXTRA_ARGS: 
     init: true

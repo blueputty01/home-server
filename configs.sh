@@ -7,8 +7,8 @@ set +o allexport
 for FILE in *; do
   if [ -d "$FILE" ]; then
     cd "$FILE"
-    echo "stopping $FILE"
-    docker compose down
+    echo "Starting $FILE"
+    docker compose config
 
     cd ..
   fi

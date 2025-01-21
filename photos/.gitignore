@@ -1,4 +1,0 @@
-.*.env
-*.env
-/postgres
-/tailscale
