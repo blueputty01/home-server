@@ -1,9 +1,13 @@
 services:
+  tailscale:
+    extends:
+      file: ../tailscale.yaml
+      service: tailscale
+    hostname: anki
   server:
     restart: unless-stopped
     build:
       dockerfile: Dockerfile
       args: 
         ANKI_VERSION: 24.11
-    ports: 
-    - '8080:8080'
+    network_mode: service:tailscale

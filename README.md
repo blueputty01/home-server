@@ -26,8 +26,22 @@ Uses [Actual](https://github.com/actualbudget/actual-server)
 
 Uses [ESPHome](https://esphome.io/guides/getting_started_command_line)
 
+## Backup
+
+```bash
+borg init --encryption repokey-blake2 ~/docker-data
+```
+## Cloud 
+
+[Nextcloud AIO](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one)
+
+[Tailscale Reverse Proxy setup](https://github.com/nextcloud/all-in-one/discussions/5439)
 
 # Development
+
+## System configuration
+
+https://github.com/chaifeng/ufw-docker
 
 ## Subtree
 

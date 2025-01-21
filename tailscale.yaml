@@ -4,8 +4,8 @@ services:
     env_file:
       - .env
     environment:
-      - TS_SERVE_CONFIG=/serve-config.json
-      - TS_STATE_DIR=/var/lib/tailscale
+      TS_SERVE_CONFIG: "/serve-config.json"
+      TS_STATE_DIR: "/var/lib/tailscale"
     volumes:
       - ${PWD}/tailscale/state:/var/lib/tailscale
       - ${PWD}/serve-config.json:/serve-config.json
