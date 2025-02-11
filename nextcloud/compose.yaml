@@ -16,6 +16,7 @@ services:
       APACHE_IP_BINDING: 127.0.0.1
       SKIP_DOMAIN_VALIDATION: true
       NEXTCLOUD_DATADIR: ${HDD_DATA_LOC}/nextcloud 
+      NEXTCLOUD_ENABLE_DRI_DEVICE: true # ⚠️⚠️⚠️ Warning: this only works if the '/dev/dri' device is present on the host! If it should not exist on your host, don't set this to true as otherwise the Nextcloud container will fail to start! See https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud
   caddy:
     image: caddy:alpine
     restart: unless-stopped
@@ -43,8 +44,8 @@ services:
     image: tailscale/tailscale:latest
     environment:
       TS_HOSTNAME: nextcloud 
-      TS_AUTH_KEY: 
-      TS_EXTRA_ARGS: 
+      TS_AUTH_KEY: ${TS_AUTHKEY} 
+      TS_EXTRA_ARGS: ${TS_EXTRA_ARGS}
     init: true
     restart: unless-stopped
     volumes:
