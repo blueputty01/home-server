@@ -1,0 +1,12 @@
+services:
+  server:
+    # restart: unless-stopped
+    build:
+      dockerfile: Dockerfile
+    environment: 
+      TS_AUTHKEY: ${TS_AUTHKEY}
+      TS_EXTRA_ARGS: ${TS_EXTRA_ARGS}
+    volumes: 
+      - ${HDD_DATA_LOC:?error}/git:/home/git
+      - ./tailscale/state:/var/lib/tailscale
+
