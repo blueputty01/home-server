@@ -4,13 +4,11 @@ Built on docker compose and deployed privately via tailscale.
 
 Extend `tailscale.yaml` in the root directory and specify `hostname` to automatically add the subdomain for the stack to the tailnet.
 
+Ephemeral containers disabled in case containers temporarily lose connection.
+
 # Features
 
 Refer to README under each stack for detailed operation information.
-
-## Time machine
-
-Uses [mbentley/time-machine](https://github.com/mbentley/docker-timemachine)
 
 ## Photos
 
