@@ -17,8 +17,13 @@ services:
       SKIP_DOMAIN_VALIDATION: true
       NEXTCLOUD_DATADIR: ${HDD_DATA_LOC}/nextcloud 
       NEXTCLOUD_ENABLE_DRI_DEVICE: true # ⚠️⚠️⚠️ Warning: this only works if the '/dev/dri' device is present on the host! If it should not exist on your host, don't set this to true as otherwise the Nextcloud container will fail to start! See https://github.com/nextcloud/all-in-one#how-to-enable-hardware-acceleration-for-nextcloud
-  caddy:
-    image: caddy:alpine
+  aio-caddy:
+    build:
+      context: .
+      dockerfile: Caddy.Dockerfile
+    depends_on:
+      aio-tailscale:
+        condition: service_healthy
     restart: unless-stopped
     environment:
       NC_DOMAIN: nextcloud.${TAILNET}
@@ -39,26 +44,32 @@ services:
         source: tailscale_sock
         target: /var/run/tailscale/ # Mount the volume for /var/run/tailscale/tailscale.sock
         read_only: true
-    network_mode: service:tailscale
-  tailscale:
+    network_mode: service:aio-tailscale
+  aio-tailscale:
     image: tailscale/tailscale:latest
     environment:
       TS_HOSTNAME: nextcloud 
       TS_AUTH_KEY: ${TS_AUTHKEY} 
       TS_EXTRA_ARGS: ${TS_EXTRA_ARGS}
+      TS_STATE_DIR: "/var/lib/tailscale"
     init: true
+    healthcheck:
+      test: tailscale status --peers=false --json | grep 'Online.*true'
+      start_period: 3s
+      interval: 1s
+      retries: 3
     restart: unless-stopped
-    volumes:
+    devices:
       - /dev/net/tun:/dev/net/tun
-      - type: volume
-        source: tailscale
+    volumes:
+      - type: bind
+        source: ${PWD}/tailscale
         target: /var/lib/tailscale
       - type: volume
         source: tailscale_sock
         target: /tmp # Mounting the entire /tmp folder to access tailscale.sock
     cap_add:
       - NET_ADMIN
-      - NET_RAW
     networks:
       - nextcloud-aio
 volumes:
@@ -80,5 +91,5 @@ networks:
     driver: bridge
     enable_ipv6: false
     driver_opts:
-      com.docker.network.driver.mtu: "9001" # Jumbo Frame
+      com.docker.network.driver.mtu: "1280" # You can set this to 9001 etc. to use jumbo frames, but packets may be dropped.
       com.docker.network.bridge.host_binding_ipv4: "127.0.0.1" # Harden aio
