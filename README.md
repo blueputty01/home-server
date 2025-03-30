@@ -29,9 +29,11 @@ Uses [ESPHome](https://esphome.io/guides/getting_started_command_line)
 ```bash
 borg init --encryption repokey-blake2 ~/docker-data
 ```
-## Cloud 
+## Nextcloud 
 
 [Nextcloud AIO](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one)
+
+Note that the containers might not be able resolve the nextcloud domain due to ACL policies on the Tailscale admin console 
 
 [Tailscale Reverse Proxy setup](https://github.com/nextcloud/all-in-one/discussions/5439)
 
