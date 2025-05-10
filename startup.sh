@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! -d "/mnt/extension" ]; then
+  echo "Error: drive extension does not seem to be mounted" >&2
+  exit 1
+fi
+
 set -o allexport
 source .env
 set +o allexport
