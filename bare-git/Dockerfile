@@ -1,4 +1,4 @@
-FROM alpine:3.21.3
+FROM alpine:latest
 VOLUME /home/git
 RUN apk fix && \
   apk --no-cache --update add git git-lfs gpg less patch perl openssh tailscale && \
