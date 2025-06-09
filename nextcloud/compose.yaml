@@ -47,7 +47,7 @@ services:
         read_only: true
     network_mode: service:tailscale
   tailscale:
-    image: tailscale/tailscale:v1.82.0
+    image: tailscale/tailscale:latest
     environment:
       TS_HOSTNAME: nextcloud 
       TS_AUTH_KEY: ${TS_NEXTCLOUD_AUTHKEY} 
