@@ -5,7 +5,7 @@ services:
       service: tailscale
     hostname: projects
   youtrack:
-    image: docker.io/jetbrains/youtrack:2025.1.76253
+    image: docker.io/jetbrains/youtrack:2025.1.82518
     volumes:
       - ./data:/opt/youtrack/data
       - ./conf:/opt/youtrack/conf
