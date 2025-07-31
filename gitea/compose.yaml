@@ -1,0 +1,36 @@
+networks:
+  gitea:
+    external: false
+
+services:
+  tailscale:
+    image: tailscale/tailscale:latest
+    environment:
+      TS_HOSTNAME: gitea 
+      TS_AUTH_KEY: ${TS_AUTHKEY} 
+      TS_EXTRA_ARGS: ${TS_EXTRA_ARGS}
+      TS_STATE_DIR: "/var/lib/tailscale"
+      TS_SERVE_CONFIG: "/serve-config.json"
+    init: true
+    restart: unless-stopped
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - ${PWD}/serve-config.json:/serve-config.json
+      - type: bind
+        source: ${PWD}/tailscale
+        target: /var/lib/tailscale
+    networks:
+      - gitea
+  server:
+    image: docker.gitea.com/gitea:1.24.3
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: always
+    volumes:
+      - ./gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    network_mode: service:tailscale
