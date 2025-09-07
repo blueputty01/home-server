@@ -4,22 +4,15 @@ networks:
 
 services:
   tailscale:
-    image: tailscale/tailscale:latest
+    extends:
+      file: ../tailscale.yaml
+      service: tailscale
     environment:
       TS_HOSTNAME: gitea 
       TS_AUTH_KEY: ${TS_AUTHKEY} 
       TS_EXTRA_ARGS: ${TS_EXTRA_ARGS}
-      TS_STATE_DIR: "/var/lib/tailscale"
-      TS_SERVE_CONFIG: "/serve-config.json"
     init: true
     restart: unless-stopped
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    volumes:
-      - ${PWD}/serve-config.json:/serve-config.json
-      - type: bind
-        source: ${PWD}/tailscale
-        target: /var/lib/tailscale
     networks:
       - gitea
   server:
