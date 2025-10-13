@@ -1,75 +1,30 @@
-import AbancaCaglesmm from './banks/abanca-caglesmm.js';
-import AbnamroAbnanl2a from './banks/abnamro_abnanl2a.js';
-import AmericanExpressAesudef1 from './banks/american-express-aesudef1.js';
-import BancsabadellBsabesbb from './banks/bancsabadell-bsabesbbb.js';
-import BankinterBkbkesmm from './banks/bankinter-bkbkesmm.js';
-import Belfius from './banks/belfius_gkccbebb.js';
-import Berliner_Sparkasse_beladebexxx from './banks/berliner_sparkasse_beladebexxx.js';
-import BnpBeGebabebb from './banks/bnp-be-gebabebb.js';
-import CBCcregbebb from './banks/cbc_cregbebb.js';
-import DanskeBankDabNO22 from './banks/danskebank-dabno22.js';
-import EasybankBawaatww from './banks/easybank-bawaatww.js';
-import EntercardSwednokk from './banks/entercard-swednokk.js';
-import Fortuneo from './banks/FORTUNEO_FTNOFRP1XXX.js';
-import HanseaticBank from './banks/HANSEATIC_HSTBDEHH.js';
-import Hype_HYEEIT22 from './banks/hype_hyeeit22.js';
-import IngIngbrobu from './banks/ing-ingbrobu.js';
-import IngIngddeff from './banks/ing-ingddeff.js';
-import IngPlIngbplpw from './banks/ing-pl-ingbplpw.js';
-import IntegrationBank from './banks/integration-bank.js';
-import IsyBankItbbitmm from './banks/isybank-itbbitmm.js';
-import KBCkredbebb from './banks/kbc_kredbebb.js';
-import MbankRetailBrexplpw from './banks/mbank-retail-brexplpw.js';
-import NationwideNaiaGB21 from './banks/nationwide-naiagb21.js';
-import NbgEthngraaxxx from './banks/nbg_ethngraaxxx.js';
-import NorwegianXxNorwnok1 from './banks/norwegian-xx-norwnok1.js';
-import RevolutRevolt21 from './banks/revolut_revolt21.js';
-import SEBKortBankAB from './banks/seb-kort-bank-ab.js';
-import SEBPrivat from './banks/seb-privat.js';
-import SandboxfinanceSfin0000 from './banks/sandboxfinance-sfin0000.js';
-import SparNordSpNoDK22 from './banks/sparnord-spnodk22.js';
-import SpkKarlsruhekarsde66 from './banks/spk-karlsruhe-karsde66.js';
-import SpkMarburgBiedenkopfHeladef1mar from './banks/spk-marburg-biedenkopf-heladef1mar.js';
-import SpkWormsAlzeyRiedMalade51wor from './banks/spk-worms-alzey-ried-malade51wor.js';
-import SwedbankHabaLV22 from './banks/swedbank-habalv22.js';
-import VirginNrnbgb22 from './banks/virgin_nrnbgb22.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const banks = [
-  AbancaCaglesmm,
-  AbnamroAbnanl2a,
-  AmericanExpressAesudef1,
-  BancsabadellBsabesbb,
-  BankinterBkbkesmm,
-  Belfius,
-  Berliner_Sparkasse_beladebexxx,
-  BnpBeGebabebb,
-  CBCcregbebb,
-  DanskeBankDabNO22,
-  EasybankBawaatww,
-  EntercardSwednokk,
-  Fortuneo,
-  HanseaticBank,
-  Hype_HYEEIT22,
-  IngIngbrobu,
-  IngIngddeff,
-  IngPlIngbplpw,
-  IsyBankItbbitmm,
-  KBCkredbebb,
-  MbankRetailBrexplpw,
-  NationwideNaiaGB21,
-  NbgEthngraaxxx,
-  NorwegianXxNorwnok1,
-  RevolutRevolt21,
-  SEBKortBankAB,
-  SEBPrivat,
-  SandboxfinanceSfin0000,
-  SparNordSpNoDK22,
-  SpkKarlsruhekarsde66,
-  SpkMarburgBiedenkopfHeladef1mar,
-  SpkWormsAlzeyRiedMalade51wor,
-  SwedbankHabaLV22,
-  VirginNrnbgb22,
-];
+import IntegrationBank from './banks/integration-bank.js';
+
+const dirname = path.resolve(fileURLToPath(import.meta.url), '..');
+const banksDir = path.resolve(dirname, 'banks');
+
+async function loadBanks() {
+  const bankHandlers = fs
+    .readdirSync(banksDir)
+    .filter((filename) => filename.includes('_') && filename.endsWith('.js'));
+
+  const imports = await Promise.all(
+    bankHandlers.map((file) => {
+      const fileUrlToBank = pathToFileURL(path.resolve(banksDir, file)); // pathToFileURL for ESM compatibility
+      return import(fileUrlToBank.toString()).then(
+        (handler) => handler.default,
+      );
+    }),
+  );
+
+  return imports;
+}
+
+export const banks = await loadBanks();
 
 export default (institutionId) =>
   banks.find((b) => b.institutionIds.includes(institutionId)) ||
@@ -82,10 +37,12 @@ export const BANKS_WITH_LIMITED_HISTORY = [
   'BANKINTER_BKBKESMM',
   'BBVA_BBVAESMM',
   'BRED_BREDFRPPXXX',
+  'CAIXA_GERAL_DEPOSITOS_CGDIPTPL',
   'CAIXABANK_CAIXESBB',
   'CARTALIS_CIMTITR1',
   'CESKA_SPORITELNA_LONG_GIBACZPX',
   'COOP_EKRDEE22',
+  'DKB_BYLADEM1',
   'DOTS_HYEEIT22',
   'FINECO_FEBIITM2XXX',
   'FINECO_UK_FEBIITM2XXX',
