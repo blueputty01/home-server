@@ -1,26 +1,11 @@
-FROM node:18-bookworm as base
-RUN apt-get update && apt-get install -y openssl
+###################################################
+# This Dockerfile is used by the docker-compose.yml
+# file to build the development container.
+# Do not make any changes here unless you know what
+# you are doing.
+###################################################
+
+FROM node:20-bullseye as dev
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y openssl
 WORKDIR /app
-COPY .yarn ./.yarn
-COPY yarn.lock package.json .yarnrc.yml ./
-RUN yarn workspaces focus --all --production
-
-FROM node:18-bookworm-slim as prod
-RUN apt-get update && apt-get install tini && apt-get clean -y && rm -rf /var/lib/apt/lists/*
-
-ARG USERNAME=actual
-ARG USER_UID=1001
-ARG USER_GID=$USER_UID
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
-RUN mkdir /data && chown -R ${USERNAME}:${USERNAME} /data
-
-WORKDIR /app
-ENV NODE_ENV production
-COPY --from=base /app/node_modules /app/node_modules
-COPY package.json app.js ./
-COPY src ./src
-COPY migrations ./migrations
-ENTRYPOINT ["/usr/bin/tini","-g",  "--"]
-EXPOSE 5006
-CMD ["node", "app.js"]
+CMD ["sh", "./bin/docker-start"]
