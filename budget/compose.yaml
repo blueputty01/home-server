@@ -5,7 +5,9 @@ services:
       service: tailscale
     hostname: budget
   actual_server:
-    image: docker.io/actualbudget/actual-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       # Uncomment any of the lines below to set configuration options.
       # - ACTUAL_HTTPS_KEY=${HTTPS_KEY}
