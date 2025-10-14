@@ -2,6 +2,13 @@
   <img src="/demo.png" alt="Actualbudget" />
 </p>
 
+# My notes:
+
+To update, run `git fetch budget [tag]`, `yarn build:server`, then `docker compose down && docker compose up -d`; may need to run `docker compose build --no-cache`
+
+# Rest of README
+
+
 ## Getting Started
 
 Actual is a local-first personal finance tool. It is 100% free and open-source, written in NodeJS, it has a synchronization element so that all your changes can move between devices without any heavy lifting.
