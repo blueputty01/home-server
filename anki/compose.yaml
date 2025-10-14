@@ -4,7 +4,7 @@ services:
     environment:
       TS_HOSTNAME: anki
       TS_STATE_DIR: "/var/lib/tailscale"
-      TS_AUTH_KEY: ${TS_AUTH_KEY}
+      TS_AUTH_KEY: ${TS_AUTHKEY}
       TS_EXTRA_ARGS: ${TS_EXTRA_ARGS}
     volumes:
       - ${PWD}/tailscale/state:/var/lib/tailscale
@@ -17,4 +17,8 @@ services:
       dockerfile: Dockerfile
       args: 
         ANKI_VERSION: 24.11
+    environment:
+      SYNC_USER1: ${USER_PASS:?err}
+    volumes:
+      - ${HDD_DATA_LOC}/anki:/home/anki/.syncserver
     network_mode: service:tailscale
