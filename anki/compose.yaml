@@ -16,9 +16,9 @@ services:
     build:
       dockerfile: Dockerfile
       args: 
-        ANKI_VERSION: 24.11
+        ANKI_VERSION: 25.09.2
     environment:
       SYNC_USER1: ${USER_PASS:?err}
     volumes:
-      - ${HDD_DATA_LOC}/anki:/home/anki/.syncserver
+      - ${HDD_DATA_LOC}/anki:/anki_data
     network_mode: service:tailscale
