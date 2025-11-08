@@ -1,0 +1,22 @@
+services:
+  # 8123
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    privileged: true
+    network_mode: host
+  # 6052
+  esphome:
+    container_name: esphome
+    image: esphome/esphome
+    volumes:
+      - ${PWD}/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    privileged: true
+    network_mode: host
