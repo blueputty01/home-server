@@ -15,8 +15,81 @@ services:
     container_name: esphome
     image: esphome/esphome
     volumes:
-      - ${PWD}/config:/config
+      - ${PWD}/esphome:/config
       - /etc/localtime:/etc/localtime:ro
     restart: always
     privileged: true
     network_mode: host
+  # 12101
+  # rhasspy:
+  #   image: "rhasspy/rhasspy"
+  #   container_name: rhasspy
+  #   restart: unless-stopped
+  #   volumes:
+  #       - "$HOME/.config/rhasspy/profiles:/profiles"
+  #       - "/etc/localtime:/etc/localtime:ro"
+  #   devices:
+  #       - "/dev/snd:/dev/snd"
+  #   command: --user-profiles /profiles --profile en
+  #   network_mode: host
+  # 10200
+  piper:
+    container_name: piper
+    image: rhasspy/wyoming-piper
+    volumes:
+      - '${PWD}/piper/data:/data'
+    # https://rhasspy.github.io/piper-samples/
+    command: --voice en_GB-northern_english_male-medium
+    network_mode: host
+  # 10300
+  whisper:
+   container_name: whisper
+   image: rhasspy/wyoming-whisper
+   volumes:
+     - '${PWD}/whisper/data:/data'
+   command: --model base --language en
+   network_mode: host
+  # 10400
+  wake_word:
+    container_name: wake_word
+    image: rhasspy/wyoming-openwakeword
+    restart: unless-stopped
+    network_mode: host
+  
+  # satellite config
+  # 10600
+  # microphone:
+  #   image: "rhasspy/wyoming-mic-external"
+  #   devices:
+  #     - /dev/snd:/dev/snd
+  #   group_add:
+  #     - audio
+  #   command:
+  #     - "--device"
+  #     - "sysdefault"
+  #     - "--debug"
+  #   network_mode: host
+  # # 10601
+  # playback:
+  #   image: "rhasspy/wyoming-snd-external"
+  #   devices:
+  #     - /dev/snd:/dev/snd
+  #   group_add:
+  #     - audio
+  #   command:
+  #     - "--device"
+  #     - "sysdefault"
+  #     - "--debug"
+  #   network_mode: host
+  # # 10700
+  # satellite:
+  #   image: "rhasspy/wyoming-satellite"
+  #   command:
+  #     - "--name"
+  #     - "my satellite"
+  #     - "--mic-uri"
+  #     - "tcp://microphone:10600"
+  #     - "--snd-uri"
+  #     - "tcp://playback:10601"
+  #     - "--debug"
+  #   network_mode: host
