@@ -27,7 +27,7 @@ services:
     volumes:
       - '${PWD}/piper/data:/data'
     # https://rhasspy.github.io/piper-samples/
-    command: --voice en_GB-northern_english_male-medium
+    command: --voice en_US-ryan-medium
     network_mode: host
   # 10300
   whisper:
@@ -45,8 +45,9 @@ services:
     network_mode: host
     command:
       - --debug
+      # Supported wake words include ok_nabu, hey_jarvis, alexa, hey_mycroft, hey_rhasspy, or a custom wake word
       - --preload-model
-      - 'hey_jarvis' # Change this to a supported wake word. Supported wake words include ok_nabu, hey_jarvis, alexa, hey_mycroft, hey_rhasspy, or the custom wake word defined below.
+      - 'hey_jarvis' 
   # 10700
   satellite:
     build: 
