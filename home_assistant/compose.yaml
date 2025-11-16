@@ -20,18 +20,6 @@ services:
     restart: always
     privileged: true
     network_mode: host
-  # 12101
-  # rhasspy:
-  #   image: "rhasspy/rhasspy"
-  #   container_name: rhasspy
-  #   restart: unless-stopped
-  #   volumes:
-  #       - "$HOME/.config/rhasspy/profiles:/profiles"
-  #       - "/etc/localtime:/etc/localtime:ro"
-  #   devices:
-  #       - "/dev/snd:/dev/snd"
-  #   command: --user-profiles /profiles --profile en
-  #   network_mode: host
   # 10200
   piper:
     container_name: piper
