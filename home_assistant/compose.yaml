@@ -54,7 +54,7 @@ services:
       context: ./satellite-src
     container_name: satellite
     restart: unless-stopped
-    volumes:
+    devices:
       - /dev/snd:/dev/snd
     privileged: true
     group_add:
