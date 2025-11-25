@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  ambient-noise:
+    build: .
+    container_name: ambient-noise
+    environment:
+      # Multi-line schedule: each line => 5 cron fields + action (start|stop|restart)
+      # Example below: start at 08:00, stop at 22:00 daily
+      NOISE_CRON: |-
+        0 06 * * * start
+        0 09 * * * stop
+    devices:
+      - /dev/snd:/dev/snd
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "bash", "-c", "/usr/local/bin/noise-manager status || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+

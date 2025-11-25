@@ -1,0 +1,24 @@
+services:
+  tailscale:
+    image: tailscale/tailscale:latest
+    environment:
+      TS_STATE_DIR: "/var/lib/tailscale"
+      TS_AUTH_KEY: ${TS_AUTHKEY}
+      TS_EXTRA_ARGS: ${TS_EXTRA_ARGS}
+    volumes:
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/tailscale/state:/var/lib/tailscale
+    cap_add:
+      - net_admin
+      - sys_module
+    hostname: anki
+  server:
+    restart: unless-stopped
+    build:
+      dockerfile: Dockerfile
+      args: 
+        ANKI_VERSION: 25.09.2
+    environment:
+      SYNC_USER1: ${USER_PASS:?error}
+    volumes:
+      - ${SSD_DATA_LOC:?error}/anki:/anki_data
+    network_mode: service:tailscale

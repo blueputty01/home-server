@@ -1,0 +1,15 @@
+services:
+  tailscale:
+    extends:
+      file: ../../shared/tailscale.yaml
+      service: tailscale
+    hostname: projects
+  youtrack:
+    image: docker.io/jetbrains/youtrack:2025.1.82518
+    volumes:
+      - ${SSD_DATA_LOC:?error}/youtrack/data:/opt/youtrack/data
+      - ${SSD_DATA_LOC:?error}/youtrack/conf:/opt/youtrack/conf
+      - ${SSD_DATA_LOC:?error}/youtrack/logs:/opt/youtrack/logs
+      - ${SSD_DATA_LOC:?error}/youtrack/backups:/opt/youtrack/backups
+    restart: unless-stopped
+    network_mode: service:tailscale

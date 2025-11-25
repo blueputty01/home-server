@@ -1,8 +1,8 @@
 #!/bin/bash
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-AUDIO_SCRIPT="$SCRIPT_DIR/fadeloop.sh"  # Change to your script's filename
-AUDIO_FILE="$SCRIPT_DIR/noise/white.mp3"  # Set your default audio file path
+AUDIO_SCRIPT="$SCRIPT_DIR/fadeloop.sh"
+AUDIO_FILE="$SCRIPT_DIR/noise/white.mp3"
 PID_FILE="$SCRIPT_DIR/logs/audio_playback.pid"
 LOG_FILE="$SCRIPT_DIR/logs/audio_playback.log"
 

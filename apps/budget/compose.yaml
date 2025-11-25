@@ -1,0 +1,30 @@
+###################################################
+# This creates and stands up the development
+# docker container. Depends on the Dockerfile and
+# docker-start.sh files.
+###################################################
+
+services:
+  tailscale:
+    extends:
+      file: ../../shared/tailscale.yaml
+      service: tailscale
+    hostname: budget
+  actual_server:
+    # image: actual_server_source:latest
+    build:
+      context: ./src
+      dockerfile: src/packages/sync-server/docker/ubuntu.Dockerfile
+    environment:
+      - HTTPS
+    volumes:
+      - ${SSD_DATA_LOC:?error}/actual:/data
+    healthcheck:
+      # Enable health check for the instance
+      test: ['CMD-SHELL', 'node src/scripts/health-check.js']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: no
+    network_mode: service:tailscale

@@ -1,0 +1,24 @@
+networks:
+  gitea:
+    external: false
+
+services:
+  tailscale:
+    extends:
+      file: ../../shared/tailscale.yaml
+      service: tailscale
+    hostname: gitea
+    networks:
+      - gitea
+  server:
+    image: docker.gitea.com/gitea:1.25.2
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: always
+    volumes:
+      - ${SSD_DATA_LOC:?error}/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    network_mode: service:tailscale
