@@ -1,0 +1,13 @@
+https://{$DOMAIN} {
+    reverse_proxy collaboration:9300 {
+        header_up X-Forwarded-Proto "https"
+        header_up Host {host}
+    }
+}
+
+http://{$DOMAIN} {
+    reverse_proxy collaboration:9300 {
+        header_up X-Forwarded-Proto "http"
+        header_up Host {host}
+    }
+}

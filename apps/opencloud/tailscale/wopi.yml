@@ -1,0 +1,47 @@
+---
+services:
+  wopi_tailscale:
+    extends: 
+      file: base.yml
+      service: tailscale
+    environment:
+      TS_HOSTNAME: wopi
+    volumes:
+      - type: bind
+        source: ${SSD_DATA_LOC}/${COMPOSE_PROJECT_NAME}/tailscale/wopi
+        target: /var/lib/tailscale
+      - type: volume
+        source: wopi_tailscale_sock
+        target: /tmp # Mounting the entire /tmp folder to access tailscale.sock
+  wopi_caddy:
+    depends_on:
+      wopi_tailscale:
+        condition: service_healthy
+    network_mode: service:wopi_tailscale
+    extends:
+      file: base.yml
+      service: caddy
+    environment:
+      DOMAIN: wopi.${TAILNET}
+    volumes:
+      - type: volume
+        source: wopi_tailscale_sock
+        target: /var/run/tailscale/ # Mount the volume for /var/run/tailscale/tailscale.sock
+        read_only: true
+      - type: bind
+        source: ${PWD}/tailscale/Caddyfile.wopi
+        target: /etc/caddy/Caddyfile
+      - type: volume
+        source: wopi_caddy_certs
+        target: /certs
+      - type: volume
+        source: wopi_caddy_data
+        target: /data
+      - type: volume
+        source: wopi_caddy_config
+        target: /config
+volumes:
+  wopi_tailscale_sock:
+  wopi_caddy_certs:
+  wopi_caddy_data:
+  wopi_caddy_config:

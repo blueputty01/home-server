@@ -1,4 +1,6 @@
 ---
+include:
+  - tailscale/wopi.yml
 services:
   collabora_tailscale:
     extends: 
