@@ -1,0 +1,13 @@
+https://{$OC_DOMAIN} {
+	reverse_proxy opencloud:9200 {
+		header_up X-Forwarded-Proto "https"
+		header_up Host {host}
+	}
+}
+
+http://{$OC_DOMAIN} {
+	reverse_proxy opencloud:9200 {
+		header_up X-Forwarded-Proto "http"
+		header_up Host {host}
+	}
+}

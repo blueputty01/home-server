@@ -1,0 +1,47 @@
+---
+services:
+  collabora_tailscale:
+    extends: 
+      file: tailscale/base.yml
+      service: tailscale
+    environment:
+      TS_HOSTNAME: collabora
+    volumes:
+      - type: bind
+        source: ${SSD_DATA_LOC}/${COMPOSE_PROJECT_NAME}/tailscale/collabora
+        target: /var/lib/tailscale
+      - type: volume
+        source: collabora_tailscale_sock
+        target: /tmp # Mounting the entire /tmp folder to access tailscale.sock
+  collabora_caddy:
+    depends_on:
+      collabora_tailscale:
+        condition: service_healthy
+    network_mode: service:collabora_tailscale
+    extends:
+      file: tailscale/base.yml
+      service: caddy
+    environment:
+      DOMAIN: collabora.${TAILNET}
+    volumes:
+      - type: volume
+        source: collabora_tailscale_sock
+        target: /var/run/tailscale/ # Mount the volume for /var/run/tailscale/tailscale.sock
+        read_only: true
+      - type: bind
+        source: ${PWD}/tailscale/Caddyfile.collabora
+        target: /etc/caddy/Caddyfile
+      - type: volume
+        source: collabora_caddy_certs
+        target: /certs
+      - type: volume
+        source: collabora_caddy_data
+        target: /data
+      - type: volume
+        source: collabora_caddy_config
+        target: /config
+volumes:
+  collabora_tailscale_sock:
+  collabora_caddy_certs:
+  collabora_caddy_data:
+  collabora_caddy_config:

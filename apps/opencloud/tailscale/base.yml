@@ -1,0 +1,27 @@
+---
+services:
+  tailscale:
+    image: tailscale/tailscale:latest
+    networks:
+      opencloud-net:
+    environment:
+      TS_AUTH_KEY: ${TS_OPENCLOUD_AUTHKEY?:error} 
+      TS_EXTRA_ARGS: ${TS_EXTRA_ARGS},tag:nextcloud
+      TS_STATE_DIR: "/var/lib/tailscale"
+    init: true
+    healthcheck:
+      test: tailscale status --peers=false --json | grep 'Online.*true'
+      start_period: 3s
+      interval: 1s
+      retries: 3
+    restart: unless-stopped
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+  caddy:
+    depends_on:
+      tailscale:
+        condition: service_healthy
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped

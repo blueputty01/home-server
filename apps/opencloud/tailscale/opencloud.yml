@@ -1,0 +1,44 @@
+---
+services:
+  tailscale:
+    extends: 
+      file: tailscale/base.yml
+      service: tailscale
+    environment:
+      TS_HOSTNAME: opencloud
+    volumes:
+      - type: bind
+        source: ${SSD_DATA_LOC}/${COMPOSE_PROJECT_NAME}/tailscale/opencloud
+        target: /var/lib/tailscale
+      - type: volume
+        source: opencloud_tailscale_sock
+        target: /tmp # Mounting the entire /tmp folder to access tailscale.sock
+  caddy:
+    network_mode: service:tailscale
+    extends:
+      file: tailscale/base.yml
+      service: caddy
+    environment:
+      OC_DOMAIN: opencloud.${TAILNET}
+    volumes:
+      - type: volume
+        source: opencloud_tailscale_sock
+        target: /var/run/tailscale/ # Mount the volume for /var/run/tailscale/tailscale.sock
+        read_only: true
+      - type: bind
+        source: ${PWD}/tailscale/Caddyfile.opencloud
+        target: /etc/caddy/Caddyfile
+      - type: volume
+        source: opencloud_caddy_certs
+        target: /certs
+      - type: volume
+        source: opencloud_caddy_data
+        target: /data
+      - type: volume
+        source: opencloud_caddy_config
+        target: /config
+volumes:
+  opencloud_tailscale_sock:
+  opencloud_caddy_certs:
+  opencloud_caddy_data:
+  opencloud_caddy_config:
