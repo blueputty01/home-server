@@ -13,21 +13,15 @@ source ./.env
 set +o allexport
 docker compose down
 
-LOG_FILE="./logs/immich_backup.log"
-
-{
-  echo "=== Immich Backup Started at $(date) ==="
-  echo "Backing up database from: ${DB_LOCATION}"
-  echo "Backing up uploads from: ${UPLOAD_LOCATION}"
-} >> "$LOG_FILE" 2>&1
+echo "=== Immich Backup Started at $(date) ==="
+echo "Backing up database from: ${DB_LOCATION}"
+echo "Backing up uploads from: ${UPLOAD_LOCATION}"
 
 borg create --stats --compression lz4 \
   ${BACKUP_REPO}::immich$(date +%F-%R) \
   ${DB_LOCATION} \
-  ${UPLOAD_LOCATION} >> "$LOG_FILE" 2>&1
+  ${UPLOAD_LOCATION}
   
-{
-  echo "=== Immich Backup Completed at $(date) ==="
-} >> "$LOG_FILE" 2>&1
+echo "=== Immich Backup Completed at $(date) ==="
 
 docker compose up -d
