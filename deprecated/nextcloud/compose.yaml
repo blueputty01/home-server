@@ -50,7 +50,7 @@ services:
     image: tailscale/tailscale:latest
     environment:
       TS_HOSTNAME: nextcloud 
-      TS_AUTH_KEY: ${TS_NEXTCLOUD_AUTHKEY} 
+      TS_AUTH_KEY: ${TS_OPENCLOUD_AUTHKEY} 
       TS_EXTRA_ARGS: ${TS_EXTRA_ARGS},tag:nextcloud
       TS_STATE_DIR: "/var/lib/tailscale"
     init: true
