@@ -4,6 +4,13 @@ set -o allexport
 source .env
 set +o allexport
 
-docker compose -f tailscale.yaml pull
+START_DIR="$PWD"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+docker compose -f ../shared/tailscale.yaml pull
 ./shutdown.sh
 ./startup.sh
+
+cd "$START_DIR"
