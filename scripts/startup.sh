@@ -17,6 +17,9 @@ cd ../apps/
 
 for FILE in *; do
   if [ -d "$FILE" ]; then
+    if [ "${FILE}" == "home_assistant" ]; then
+      continue
+    fi
     cd "$FILE"
     echo "Starting $FILE"
     docker compose up -d
@@ -26,3 +29,4 @@ for FILE in *; do
 done
 
 cd "$START_DIR"
+
