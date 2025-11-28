@@ -1,35 +1,28 @@
 #!/usr/bin/env bash
 set -u
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG_FILE="$SCRIPT_DIR/logs/backup.log"
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root." 
+   exit 1
+fi
 
-LOG() { printf "\n%s %s\n\n" "$( date )" "$*" >> "$LOG_FILE" 2>&1; }
-trap 'echo $( date ) Backup interrupted >> "$LOG_FILE" 2>&1; exit 2' INT TERM
+# set working dir to root of project
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
+cd ../
+
+set -o allexport
+source .env
+set +o allexport
+
+./scripts/shutdown.sh
 
 borg create --stats --compression lz4 \
-  ${BACKUP_REPO}::config$(date +%F-%R) \
-  "$SCRIPT_DIR/.env" \
-  --exclude "*/logs/*" \
-  --exclude "*/docker_volumes/*" \
-  >> "$LOG_FILE" 2>&1
+  ${BACKUP_REPO}::all$(date +%F-%R) \
+  ${HDD_DATA_LOC}
+  "$(pwd)"
 
 backup_exit=$?
-
-# Run the backup script for each app
-for APP_DIR in "$SCRIPT_DIR"/apps/*; do
-    if [ -d "$APP_DIR" ]; then
-        BACKUP_SCRIPT="$APP_DIR/backup.sh"
-        if [ -f "$BACKUP_SCRIPT" ]; then
-            bash "$BACKUP_SCRIPT" >> "$LOG_FILE" 2>&1
-            script_exit=$?
-            if [ $script_exit -ne 0 ]; then
-                LOG "Backup script for $(basename "$APP_DIR") failed with exit code $script_exit"
-                backup_exit=$(( backup_exit > script_exit ? backup_exit : script_exit ))
-            fi
-        fi
-    fi
-done
 
 borg prune                          \
     --list                          \
@@ -38,14 +31,18 @@ borg prune                          \
     --keep-daily    7               \
     --keep-weekly   4               \
     --keep-monthly  6              \
-    ${BACKUP_REPO}                  \
-    >> "$LOG_FILE" 2>&1
+    ${BACKUP_REPO}
 
 prune_exit=$?
 
-borg compact
+borg compact \
+    --list                          \
+    --show-rc                       \
+    ${BACKUP_REPO}
 
 compact_exit=$?
+
+./scripts/startup.sh
 
 # use highest exit code as global exit code
 global_exit=$(( backup_exit > prune_exit ? backup_exit : prune_exit ))
