@@ -1,17 +1,17 @@
 # Architecture
 
-Multi-container stacks run on Docker compose and deployed privately via tailscale.
+Multi-container stacks that run on Docker compose. Tailscale is used 
 
 
 # Features
 
-- Anki (custom Docker image)
-- Budgeting system (Actual)
-- Gitea
-- Home Assistant
-- Immich
-- Opencloud
-- Youtrack
+- Anki (custom Docker image exposing sync server)
+- Actual (budgeting system)
+- Gitea (git server and frontend)
+- Home Assistant: mic/speaker, voice synthesis, automatic speech recognition, and central automation containers
+- Immich (cloud photos)
+- Opencloud (cloud file storage)
+- Youtrack (project management)
 
 # Backup
 
