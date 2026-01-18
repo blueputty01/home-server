@@ -1,0 +1,17 @@
+services:
+  tailscale:
+    extends:
+      file: ../../shared/tailscale.yaml
+      service: tailscale
+    hostname: jelu
+  jelu:
+    image: wabayang/jelu
+    container_name: jelu
+    volumes:
+      - ./config.yml:/config/application.yml:ro
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/jelu/database:/database
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/jelu/files/images:/files/images
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/jelu/files/imports:/files/imports
+      - /etc/timezone:/etc/timezone:ro
+    restart: unless-stopped
+    network_mode: service:tailscale
