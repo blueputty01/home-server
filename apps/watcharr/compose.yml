@@ -1,0 +1,13 @@
+services:
+  tailscale:
+    extends:
+      file: ../../shared/tailscale.yaml
+      service: tailscale
+    hostname: watcharr
+  watcharr:
+    image: ghcr.io/sbondco/watcharr:v2.1.1
+    volumes:
+      # Contains all of watcharr data (database & cache)
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/watcharr:/data
+    restart: unless-stopped
+    network_mode: service:tailscale
