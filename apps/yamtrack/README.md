@@ -1,0 +1,1 @@
+I only use the book integration. Consider writing a new one so I have full control over the UI. The current one is a bit clunky, especially when sorting.
