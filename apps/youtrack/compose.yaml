@@ -5,7 +5,7 @@ services:
       service: tailscale
     hostname: projects
   youtrack:
-    image: docker.io/jetbrains/youtrack:2025.1.82518
+    image: docker.io/jetbrains/youtrack:2025.3.117635
     volumes:
       - ${SSD_DATA_LOC:?error}/youtrack/data:/opt/youtrack/data
       - ${SSD_DATA_LOC:?error}/youtrack/conf:/opt/youtrack/conf
