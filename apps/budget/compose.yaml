@@ -14,7 +14,7 @@ services:
     # image: actual_server_source:latest
     build:
       context: ./src
-      dockerfile: src/packages/sync-server/docker/ubuntu.Dockerfile
+      dockerfile: sync-server.Dockerfile
     environment:
       - HTTPS
     volumes:
