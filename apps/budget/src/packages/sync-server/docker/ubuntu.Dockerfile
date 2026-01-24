@@ -35,6 +35,7 @@ RUN rm -rf ./node_modules/@actual-app/web ./node_modules/@actual-app/sync-server
 
 # Copy in the @actual-app/web artifacts manually, so we don't need the entire packages folder
 COPY packages/desktop-client/package.json ./node_modules/@actual-app/web/package.json
+# If this line fails, try building the desktop-client first: `cd packages/desktop-client && yarn && yarn build`
 COPY packages/desktop-client/build ./node_modules/@actual-app/web/build
 
 FROM node:22-bookworm-slim AS prod
@@ -54,6 +55,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Pull in only the necessary artifacts (built node_modules, server files, etc.)
+# If this line fails, try building the sync-server first: `cd packages/sync-server && yarn && yarn build`
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/packages/sync-server/package.json ./
 COPY --from=builder /app/packages/sync-server/build ./
