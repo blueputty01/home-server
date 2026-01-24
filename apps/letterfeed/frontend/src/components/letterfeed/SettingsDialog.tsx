@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,32 +7,35 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Loader2, CheckCircle, XCircle } from "lucide-react"
+} from '@/components/ui/select';
+import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import {
   Settings as AppSettings,
   SettingsCreate,
   updateSettings,
   testImapConnection,
-} from "@/lib/api"
-import { toast } from "sonner"
+  startGmailOAuth2,
+  listGmailCredentials,
+  revokeGmailCredential,
+} from '@/lib/api';
+import { toast } from 'sonner';
 
 interface SettingsDialogProps {
-  settings: AppSettings
-  folderOptions: string[]
-  isOpen: boolean
-  onOpenChange: (isOpen: boolean) => void
-  onSuccess: () => void
+  settings: AppSettings;
+  folderOptions: string[];
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  onSuccess: () => void;
 }
 
 export function SettingsDialog({
@@ -43,62 +46,106 @@ export function SettingsDialog({
   onSuccess,
 }: SettingsDialogProps) {
   const [currentSettings, setCurrentSettings] = useState<SettingsCreate | null>(
-    null
-  )
+    null,
+  );
   const [testConnectionStatus, setTestConnectionStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle")
-  const [testConnectionMessage, setTestConnectionMessage] = useState("")
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
+  const [testConnectionMessage, setTestConnectionMessage] = useState('');
+  const [gmailConnected, setGmailConnected] = useState<boolean>(false);
+  const [gmailEmail, setGmailEmail] = useState<string | null>(null);
 
   useEffect(() => {
     if (settings) {
-      setCurrentSettings({ ...settings, imap_password: "" })
+      setCurrentSettings({ ...settings, imap_password: '' });
     }
-  }, [settings])
+  }, [settings]);
 
-  if (!currentSettings) return null
+  useEffect(() => {
+    async function loadGmailStatus() {
+      try {
+        const creds = await listGmailCredentials();
+        if (creds && creds.length > 0) {
+          setGmailConnected(true);
+          setGmailEmail(creds[0].email);
+        } else {
+          setGmailConnected(false);
+          setGmailEmail(null);
+        }
+      } catch {
+        // ignore
+      }
+    }
+    if (currentSettings?.imap_server?.toLowerCase() === 'imap.gmail.com') {
+      loadGmailStatus();
+    }
+  }, [currentSettings?.imap_server]);
+
+  if (!currentSettings) return null;
 
   const handleSettingsChange = <K extends keyof SettingsCreate>(
     key: K,
-    value: SettingsCreate[K]
+    value: SettingsCreate[K],
   ) => {
-    setCurrentSettings((prev) => (prev ? { ...prev, [key]: value } : null))
-  }
+    setCurrentSettings((prev) => (prev ? { ...prev, [key]: value } : null));
+  };
 
   const handleSave = async () => {
-    if (!currentSettings) return
+    if (!currentSettings) return;
     try {
-      const payload: SettingsCreate = { ...currentSettings }
-      if (payload.imap_password === "") {
-        delete payload.imap_password
+      const payload: SettingsCreate = { ...currentSettings };
+      if (payload.imap_password === '') {
+        delete payload.imap_password;
       }
-      await updateSettings(payload)
-      toast.success("Settings saved successfully!")
-      onOpenChange(false)
-      onSuccess()
+      await updateSettings(payload);
+      toast.success('Settings saved successfully!');
+      onOpenChange(false);
+      onSuccess();
     } catch (error) {
-      console.error("Failed to save settings:", error)
-      toast.error("Failed to save settings.")
+      console.error('Failed to save settings:', error);
+      toast.error('Failed to save settings.');
     }
-  }
+  };
 
   const handleTestConnection = async () => {
-    if (!currentSettings) return
-    setTestConnectionStatus("loading")
+    if (!currentSettings) return;
+    setTestConnectionStatus('loading');
     try {
-      await updateSettings(currentSettings)
-      const result = await testImapConnection()
-      setTestConnectionStatus("success")
-      setTestConnectionMessage(result.message)
+      await updateSettings(currentSettings);
+      const result = await testImapConnection();
+      setTestConnectionStatus('success');
+      setTestConnectionMessage(result.message);
     } catch (error: unknown) {
-      setTestConnectionStatus("error")
+      setTestConnectionStatus('error');
       if (error instanceof Error) {
-        setTestConnectionMessage(error.message || "Connection failed")
+        setTestConnectionMessage(error.message || 'Connection failed');
       } else {
-        setTestConnectionMessage("An unknown error occurred")
+        setTestConnectionMessage('An unknown error occurred');
       }
     }
-  }
+  };
+
+  const handleConnectGmail = async () => {
+    try {
+      const redirectUri = `${window.location.origin}/oauth2/callback`;
+      const { authorization_url } = await startGmailOAuth2(redirectUri);
+      window.location.href = authorization_url;
+    } catch (e) {
+      toast.error('Failed to start Google authorization');
+    }
+  };
+
+  const handleDisconnectGmail = async () => {
+    if (!gmailEmail) return;
+    try {
+      await revokeGmailCredential(gmailEmail);
+      toast.success('Disconnected Gmail');
+      setGmailConnected(false);
+      setGmailEmail(null);
+    } catch (e) {
+      toast.error('Failed to disconnect Gmail');
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -121,10 +168,10 @@ export function SettingsDialog({
                 id="imap-server"
                 value={currentSettings.imap_server}
                 onChange={(e) =>
-                  handleSettingsChange("imap_server", e.target.value)
+                  handleSettingsChange('imap_server', e.target.value)
                 }
                 placeholder="imap.gmail.com"
-                disabled={settings.locked_fields.includes("imap_server")}
+                disabled={settings.locked_fields.includes('imap_server')}
               />
             </div>
             <div className="space-y-2">
@@ -133,10 +180,10 @@ export function SettingsDialog({
                 id="imap-username"
                 value={currentSettings.imap_username}
                 onChange={(e) =>
-                  handleSettingsChange("imap_username", e.target.value)
+                  handleSettingsChange('imap_username', e.target.value)
                 }
                 placeholder="your-email@gmail.com"
-                disabled={settings.locked_fields.includes("imap_username")}
+                disabled={settings.locked_fields.includes('imap_username')}
               />
             </div>
             <div className="space-y-2">
@@ -144,39 +191,69 @@ export function SettingsDialog({
               <Input
                 id="imap-password"
                 type="password"
-                value={currentSettings.imap_password ?? ""}
+                value={currentSettings.imap_password ?? ''}
                 onChange={(e) =>
-                  handleSettingsChange("imap_password", e.target.value)
+                  handleSettingsChange('imap_password', e.target.value)
                 }
                 placeholder="Your password or app password"
-                disabled={settings.locked_fields.includes("imap_password")}
+                disabled={settings.locked_fields.includes('imap_password')}
               />
             </div>
+            {currentSettings.imap_server?.toLowerCase() ===
+              'imap.gmail.com' && (
+              <div className="pt-1 space-y-2">
+                <div className="text-sm text-muted-foreground">
+                  Prefer OAuth2 for Gmail. It’s more secure than passwords.
+                </div>
+                <div className="flex items-center gap-2">
+                  {!gmailConnected ? (
+                    <Button
+                      onClick={handleConnectGmail}
+                      size="sm"
+                      variant="default"
+                    >
+                      Connect Gmail (OAuth2)
+                    </Button>
+                  ) : (
+                    <>
+                      <div className="text-sm">Connected: {gmailEmail}</div>
+                      <Button
+                        onClick={handleDisconnectGmail}
+                        size="sm"
+                        variant="outline"
+                      >
+                        Disconnect
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
             <div className="pt-2">
               <Button
                 onClick={handleTestConnection}
-                disabled={testConnectionStatus === "loading"}
+                disabled={testConnectionStatus === 'loading'}
                 variant="outline"
                 size="sm"
               >
-                {testConnectionStatus === "loading" && (
+                {testConnectionStatus === 'loading' && (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 )}
                 Test Connection
               </Button>
-              {testConnectionStatus !== "idle" && (
+              {testConnectionStatus !== 'idle' && (
                 <div
                   data-testid="connection-status"
                   className={`mt-2 flex items-center text-sm ${
-                    testConnectionStatus === "success"
-                      ? "text-green-600"
-                      : "text-red-600"
+                    testConnectionStatus === 'success'
+                      ? 'text-green-600'
+                      : 'text-red-600'
                   }`}
                 >
-                  {testConnectionStatus === "success" && (
+                  {testConnectionStatus === 'success' && (
                     <CheckCircle className="w-4 h-4 mr-2" />
                   )}
-                  {testConnectionStatus === "error" && (
+                  {testConnectionStatus === 'error' && (
                     <XCircle className="w-4 h-4 mr-2" />
                   )}
                   {testConnectionMessage}
@@ -195,9 +272,9 @@ export function SettingsDialog({
               <Select
                 value={currentSettings.search_folder}
                 onValueChange={(value) =>
-                  handleSettingsChange("search_folder", value)
+                  handleSettingsChange('search_folder', value)
                 }
-                disabled={settings.locked_fields.includes("search_folder")}
+                disabled={settings.locked_fields.includes('search_folder')}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select folder" />
@@ -214,14 +291,14 @@ export function SettingsDialog({
             <div className="space-y-2">
               <Label htmlFor="move-folder">Move to Folder</Label>
               <Select
-                value={currentSettings.move_to_folder || "None"}
+                value={currentSettings.move_to_folder || 'None'}
                 onValueChange={(value) =>
                   handleSettingsChange(
-                    "move_to_folder",
-                    value === "None" ? null : value
+                    'move_to_folder',
+                    value === 'None' ? null : value,
                   )
                 }
-                disabled={settings.locked_fields.includes("move_to_folder")}
+                disabled={settings.locked_fields.includes('move_to_folder')}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select folder or leave empty" />
@@ -246,12 +323,14 @@ export function SettingsDialog({
                 value={currentSettings.email_check_interval}
                 onChange={(e) =>
                   handleSettingsChange(
-                    "email_check_interval",
-                    Number.parseInt(e.target.value) || 15
+                    'email_check_interval',
+                    Number.parseInt(e.target.value) || 15,
                   )
                 }
                 placeholder="15"
-                disabled={settings.locked_fields.includes("email_check_interval")}
+                disabled={settings.locked_fields.includes(
+                  'email_check_interval',
+                )}
               />
             </div>
             <div className="flex items-center space-x-2 pt-2">
@@ -259,9 +338,9 @@ export function SettingsDialog({
                 id="mark-read"
                 checked={currentSettings.mark_as_read}
                 onCheckedChange={(checked) =>
-                  handleSettingsChange("mark_as_read", !!checked)
+                  handleSettingsChange('mark_as_read', !!checked)
                 }
-                disabled={settings.locked_fields.includes("mark_as_read")}
+                disabled={settings.locked_fields.includes('mark_as_read')}
               />
               <Label htmlFor="mark-read" className="text-sm font-normal">
                 Mark emails as read
@@ -272,9 +351,11 @@ export function SettingsDialog({
                 id="auto-add"
                 checked={currentSettings.auto_add_new_senders}
                 onCheckedChange={(checked) =>
-                  handleSettingsChange("auto_add_new_senders", !!checked)
+                  handleSettingsChange('auto_add_new_senders', !!checked)
                 }
-                disabled={settings.locked_fields.includes("auto_add_new_senders")}
+                disabled={settings.locked_fields.includes(
+                  'auto_add_new_senders',
+                )}
               />
               <Label htmlFor="auto-add" className="text-sm font-normal">
                 Auto-add new senders
@@ -290,5 +371,5 @@ export function SettingsDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

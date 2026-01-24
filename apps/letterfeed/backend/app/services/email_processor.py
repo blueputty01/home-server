@@ -10,6 +10,7 @@ from readability import Document
 from sqlalchemy.orm import Session
 
 from app.core.logging import get_logger
+from app.core.config import settings as app_settings
 from app.crud.entries import create_entry, get_entry_by_message_id
 from app.crud.newsletters import create_newsletter, get_newsletters
 from app.crud.settings import get_settings
@@ -17,31 +18,80 @@ from app.models.newsletters import Newsletter
 from app.schemas.entries import EntryCreate
 from app.schemas.newsletters import NewsletterCreate
 from app.schemas.settings import Settings
+from app.crud.oauth2 import (
+    get_oauth2_credential,
+    get_decrypted_credential,
+    update_oauth2_tokens,
+)
+from app.services.oauth2 import (
+    is_token_expired,
+    refresh_access_token,
+)
 
 logger = get_logger(__name__)
 
 
-def _is_configured(settings: Settings | None) -> bool:
+def _is_configured(db: Session, settings: Settings | None) -> bool:
     """Check if IMAP settings are configured."""
     if (
         not settings
         or not settings.imap_server
         or not settings.imap_username
-        or not settings.imap_password
     ):
         logger.warning("IMAP settings are not configured. Skipping email processing.")
+        return False
+    # If password isn't provided, allow Gmail via OAuth2 when configured
+    if not getattr(settings, "imap_password", None):
+        if settings.imap_server.strip().lower() == "imap.gmail.com":
+            cred = get_oauth2_credential(db, settings.imap_username)
+            if cred:
+                return True
+        logger.warning("IMAP password missing and no Gmail OAuth2 credential found.")
         return False
     return True
 
 
 def _connect_to_imap(
-    settings: Settings, search_folder: str
+    db: Session, settings: Settings, search_folder: str
 ) -> imaplib.IMAP4_SSL | None:
     """Connect to the IMAP server and select the mailbox."""
     try:
         logger.info(f"Connecting to IMAP server: {settings.imap_server}")
         mail = imaplib.IMAP4_SSL(settings.imap_server)
-        mail.login(settings.imap_username, settings.imap_password)
+        # Prefer OAuth2 for Gmail if available
+        if settings.imap_server.strip().lower() == "imap.gmail.com":
+            cred_model = get_oauth2_credential(db, settings.imap_username)
+            if cred_model:
+                tokens = get_decrypted_credential(db, settings.imap_username)
+                if tokens is None:
+                    raise RuntimeError("Failed to decrypt Gmail OAuth2 tokens")
+                access_token, refresh_token = tokens
+                if is_token_expired(cred_model.token_expiry):
+                    if not app_settings.google_client_secrets_json:
+                        raise RuntimeError(
+                            "Google OAuth2 client secrets not configured for token refresh"
+                        )
+                    import json as _json
+
+                    client_secrets = _json.loads(app_settings.google_client_secrets_json)
+                    new_access, new_expiry = refresh_access_token(
+                        client_secrets, refresh_token
+                    )
+                    updated = update_oauth2_tokens(
+                        db, settings.imap_username, new_access, new_expiry
+                    )
+                    access_token = new_access
+                # XOAUTH2 auth string
+                auth_string = f"user={settings.imap_username}\x01auth=Bearer {access_token}\x01\x01"
+                import base64 as _b64
+
+                mail.authenticate(
+                    "XOAUTH2", lambda x: _b64.b64encode(auth_string.encode())
+                )
+            else:
+                mail.login(settings.imap_username, settings.imap_password)
+        else:
+            mail.login(settings.imap_username, settings.imap_password)
         status, messages = mail.select(search_folder)
         if status != "OK":
             logger.error(
@@ -238,7 +288,7 @@ def process_emails(db: Session) -> None:
     """Process unread emails, add them as entries, and manage newsletters."""
     logger.info("Starting email processing...")
     settings = get_settings(db, with_password=True)
-    if not _is_configured(settings):
+    if not _is_configured(db, settings):
         return
 
     all_newsletters = get_newsletters(db)
@@ -264,7 +314,7 @@ def process_emails(db: Session) -> None:
             sender.email: nl for nl in newsletters_in_folder for sender in nl.senders
         }
 
-        mail = _connect_to_imap(settings, search_folder)
+        mail = _connect_to_imap(db, settings, search_folder)
         if not mail:
             logger.warning(
                 f"Skipping folder '{search_folder}' due to connection issue."

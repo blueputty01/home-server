@@ -9,6 +9,10 @@ from app.core.logging import get_logger
 from app.crud.settings import create_or_update_settings, get_settings
 from app.schemas.settings import Settings, SettingsCreate
 from app.services.email_processor import process_emails
+from app.crud.oauth2 import get_oauth2_credential, get_decrypted_credential
+from app.services.oauth2 import is_token_expired, refresh_access_token
+from app.core.config import settings as app_settings
+import json as _json
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -41,10 +45,33 @@ def test_connection(db: Session = Depends(get_db)):
         logger.error("IMAP settings not found, cannot test connection")
         raise HTTPException(status_code=404, detail="IMAP settings not found")
 
+    # Prefer OAuth2 for Gmail when available
+    oauth2_email = None
+    oauth2_token = None
+    if settings.imap_server.strip().lower() == "imap.gmail.com":
+        cred = get_oauth2_credential(db, settings.imap_username)
+        if cred:
+            tokens = get_decrypted_credential(db, settings.imap_username)
+            if tokens:
+                access_token, refresh_token = tokens
+                if is_token_expired(cred.token_expiry):
+                    if not app_settings.google_client_secrets_json:
+                        raise HTTPException(
+                            status_code=500,
+                            detail="Google OAuth2 client secrets not configured.",
+                        )
+                    client_secrets = _json.loads(app_settings.google_client_secrets_json)
+                    new_access, _ = refresh_access_token(client_secrets, refresh_token)
+                    access_token = new_access
+                oauth2_email = settings.imap_username
+                oauth2_token = access_token
+
     is_successful, message = _test_imap_connection(
         server=settings.imap_server,
         username=settings.imap_username,
         password=settings.imap_password,
+        oauth2_email=oauth2_email,
+        oauth2_token=oauth2_token,
     )
 
     if not is_successful:
@@ -64,10 +91,33 @@ def read_folders(db: Session = Depends(get_db)):
         logger.error("IMAP settings not found, cannot fetch folders")
         raise HTTPException(status_code=404, detail="IMAP settings not found")
 
+    # Prefer OAuth2 for Gmail when available
+    oauth2_email = None
+    oauth2_token = None
+    if settings.imap_server.strip().lower() == "imap.gmail.com":
+        cred = get_oauth2_credential(db, settings.imap_username)
+        if cred:
+            tokens = get_decrypted_credential(db, settings.imap_username)
+            if tokens:
+                access_token, refresh_token = tokens
+                if is_token_expired(cred.token_expiry):
+                    if not app_settings.google_client_secrets_json:
+                        raise HTTPException(
+                            status_code=500,
+                            detail="Google OAuth2 client secrets not configured.",
+                        )
+                    client_secrets = _json.loads(app_settings.google_client_secrets_json)
+                    new_access, _ = refresh_access_token(client_secrets, refresh_token)
+                    access_token = new_access
+                oauth2_email = settings.imap_username
+                oauth2_token = access_token
+
     folders = get_folders(
         server=settings.imap_server,
         username=settings.imap_username,
         password=settings.imap_password,
+        oauth2_email=oauth2_email,
+        oauth2_token=oauth2_token,
     )
 
     logger.info(f"Found {len(folders)} IMAP folders")
