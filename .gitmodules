@@ -1,0 +1,3 @@
+[submodule "apps/server_stats/src"]
+	path = apps/server_stats/src
+	url = https://github.com/blueputty01/server_stats
