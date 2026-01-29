@@ -20,6 +20,9 @@ for FILE in *; do
     if [ "${FILE}" == "home_assistant" ]; then
       continue
     fi
+    if [ "${FILE}" == "letterfeed" ]; then
+      continue
+    fi
     cd "$FILE"
     echo "Starting $FILE"
     docker compose up -d
