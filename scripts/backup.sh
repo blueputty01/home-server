@@ -19,25 +19,23 @@ set +o allexport
 
 borg create --stats --compression lz4 \
   ${BACKUP_REPO}::all$(date +%F-%R) \
-  ${HDD_DATA_LOC}
+  ${HDD_DATA_LOC}                   \
   "$(pwd)"
 
 backup_exit=$?
 
 borg prune                          \
+    ${BACKUP_REPO}                  \
     --list                          \
     --glob-archives '{hostname}-*'  \
     --show-rc                       \
     --keep-daily    7               \
     --keep-weekly   4               \
     --keep-monthly  6              \
-    ${BACKUP_REPO}
 
 prune_exit=$?
 
 borg compact \
-    --list                          \
-    --show-rc                       \
     ${BACKUP_REPO}
 
 compact_exit=$?
@@ -49,11 +47,11 @@ global_exit=$(( backup_exit > prune_exit ? backup_exit : prune_exit ))
 global_exit=$(( compact_exit > global_exit ? compact_exit : global_exit ))
 
 if [ ${global_exit} -eq 0 ]; then
-    info "Backup, Prune, and Compact finished successfully"
+    echo "Backup, Prune, and Compact finished successfully"
 elif [ ${global_exit} -eq 1 ]; then
-    info "Backup, Prune, and/or Compact finished with warnings"
+    echo "Backup, Prune, and/or Compact finished with warnings"
 else
-    info "Backup, Prune, and/or Compact finished with errors"
+    echo "Backup, Prune, and/or Compact finished with errors"
 fi
 
 exit ${global_exit}
