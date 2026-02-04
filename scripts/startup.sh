@@ -5,6 +5,8 @@ if [ ! -d "/mnt/extension" ]; then
   exit 1
 fi
 
+skip=(home_assistant letterfeed server_stats)
+
 set -o allexport
 source .env
 set +o allexport
@@ -17,12 +19,10 @@ cd ../apps/
 
 for FILE in *; do
   if [ -d "$FILE" ]; then
-    if [ "${FILE}" == "home_assistant" ]; then
-      continue
-    fi
-    if [ "${FILE}" == "letterfeed" ]; then
-      continue
-    fi
+    for s in "${skip[@]}"; do
+      [[ "$FILE" == "$s" ]] && continue 2
+    done
+
     cd "$FILE"
     echo "Starting $FILE"
     docker compose up -d
