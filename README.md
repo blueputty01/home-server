@@ -8,22 +8,25 @@ In rough order of personal importance:
 
 | Application | Description |
 | :--- | :--- |
-| Immich | Cloud photos |
-| Opencloud | Cloud file storage |
-| Paperless | Digital document archive |
-| Youtrack | Project management |
-| Home Assistant | Mic/speaker, voice synthesis, automatic speech recognition, and central automation containers |
-| ESPHome | Flash custom firmware to smart home devices |
-| Open WebUI | Extensible self-hosted AI platform |
-| Yamtrack | Book tracking |
-| Actual | Budgeting system |
-| Gitea | Git service |
-| Anki | Custom Docker image exposing sync server |
-| System | Custom C++ dashboard for system monitoring |
+| 📸 **Immich** | Cloud photos |
+| ☁️ **Opencloud** | Personal cloud file storage and sharing 📂 |
+| 📄 **Paperless** | Digital document archive and management 🗃️ |
+| 📊 **Youtrack** | Project management and issue tracking |
+| 🏠 **Home Assistant** | Mic/speaker, voice synthesis, ASR, and central automation for smart home devices |
+| ⚡️ **ESPHome** | Flash custom firmware to smart home devices |
+| 🎧 **Noise** | Automated white/pink noise to help me 💤 |
+| 🤖 **Open WebUI** | Extensible self-hosted AI interface platform |
+| 📚 **Yamtrack** | Personal book and reading progress tracking |
+| 💸 **Actual** | Personal budgeting system |
+| 🌿 **Gitea** | Lightweight self-hosted Git service |
+| 🗂️ **Anki** | Custom Docker image exposing a sync server |
+| 🖥️ **System** | Custom C++ dashboard for system monitoring 📈 |
 
 Tailscale is used to expose applications via VPN to only trusted clients through convenient, secured paths like `https://photos.tailxxxxxx.ts.net/`
 
 ## Active development
+
+In no particular order, I'm currently working on:
 
 - Container orchestration for home assistant to offload speech recognition to more capable hardware in the system
 - OIDC integration across the system for centralized user management
