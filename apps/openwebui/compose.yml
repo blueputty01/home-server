@@ -2,10 +2,10 @@ services:
   openwebui:
     image: ghcr.io/open-webui/open-webui:main
     volumes:
-      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}:/app/backend/data
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/data:/app/backend/data
     network_mode: service:tailscale
   tailscale:
     extends:
       file: ../../shared/tailscale.yaml
       service: tailscale
-    hostname: openwebui
+    hostname: chat
