@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./rclone.conf:/config/rclone/rclone.conf:ro
-    command: 'serve webdav opencloud: --addr 0.0.0.0:8080'
+    command: 'serve webdav opencloud: --addr 0.0.0.0:8080 --vfs-cache-mode=full'
     network_mode: 'service:tailscale'
   tailscale:
     extends:
