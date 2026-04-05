@@ -4,4 +4,4 @@ set -o allexport
 source .env
 set +o allexport
 
-/bin/zsh
+/bin/bash
