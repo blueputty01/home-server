@@ -14,6 +14,8 @@ services:
       - TZ=America/New_York
       - SECRET=longstring
       - REDIS_URL=redis://redis:6379
+      - SOCIAL_PROVIDERS=allauth.socialaccount.providers.openid_connect
+      - SOCIALACCOUNT_PROVIDERS={"openid_connect":{"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"authentik","name":"Authentik","client_id":"XsjEllMEfic0R40ojUFNAuXPKdutOx84pIrc2Npe","secret":"VegdNrW4aNwEx7rdiSiaZgKuP2qzgWMJswpsML8S8SQY7brvbpSm87v2p3gMF4S7ppAc8liK60D2GtyePfkal3f6MeoKAAhJkgVeKV7uHN2Niaux3IJLPFbD6oVZCHln","settings":{"server_url":"https://auth.tail8df7b8.ts.net/application/o/yamtrack/.well-known/openid-configuration"}}]}}
     volumes:
       - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/db/state:/yamtrack/db
     network_mode: service:tailscale
