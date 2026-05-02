@@ -2,7 +2,7 @@ services:
   # 8123
   homeassistant:
     container_name: homeassistant
-    image: ghcr.io/home-assistant/home-assistant:stable
+    build: .
     restart: unless-stopped
     volumes:
       - ./config:/config
