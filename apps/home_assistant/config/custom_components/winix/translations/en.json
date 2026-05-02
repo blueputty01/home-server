@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        },
+        "description": "Configure the Winix integration by signing in with your mobile app credentials.",
+        "title": "Winix Air Purifier"
+      }
+    },
+    "error": {
+      "invalid_auth": "The entered password is invalid.",
+      "invalid_user": "The username is invalid. Make sure it's the same one registered with the mobile app and that the capitalization matches.",
+      "unknown": "Unexpected error"
+    }
+  }
+}
