@@ -5,7 +5,7 @@ services:
     image: ghcr.io/home-assistant/home-assistant:stable
     restart: unless-stopped
     volumes:
-      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/config:/config
+      - ./config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
     privileged: true
@@ -15,7 +15,7 @@ services:
     container_name: esphome
     image: esphome/esphome
     volumes:
-      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/esphome:/config
+      - ./esphome:/config
       - /etc/localtime:/etc/localtime:ro
     restart: always
     privileged: true
@@ -71,7 +71,7 @@ services:
     network_mode: host
   tailscale:
     extends:
-      file: ../tailscale.yaml
+      file: ../../shared/tailscale.yaml
       service: tailscale
     network_mode: host
     hostname: home
