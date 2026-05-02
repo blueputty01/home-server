@@ -36,14 +36,16 @@
     - Turn off charging
   conditions: []
   actions:
-  - type: turn_off
-    device_id: 84758d4c8d8cc3a5bee3e09290b36f77
-    entity_id: 19a7e39ca1dd2d92ab010907994433e8
-    domain: switch
-  - type: turn_off
-    device_id: 881a56990834263be01f53598d175912
-    entity_id: 827f05a06da8518c189a74bf4d7540a7
-    domain: switch
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.45w_sonoff_s31_relay
+    data: {}
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.desk_lamp_sonoff_s31_relay
+    data: {}
   mode: single
 - id: '1763956518010'
   alias: Sleep
@@ -56,27 +58,17 @@
     id: voice
   conditions: []
   actions:
-  - type: turn_off
-    device_id: 672673fb303e8fb5eff2b20f8ad3fcd3
-    entity_id: 17a5176a4488b64d438fd3b1c452bebb
-    domain: light
+  - action: light.turn_off
+    metadata: {}
+    target:
+      entity_id: light.desk_lamp
+    data: {}
   - action: automation.trigger
     metadata: {}
     data:
       skip_condition: true
     target:
-      entity_id: automation.turn_off_charging
-  - if:
-    - condition: trigger
-      id:
-      - voice
-    then:
-    - action: assist_satellite.announce
-      metadata: {}
-      data:
-        preannounce: false
-      target:
-        entity_id: assist_satellite.wyoming_satellite
+      entity_id: automation.sleep
   mode: single
 - id: '1763956737552'
   alias: Never mind
