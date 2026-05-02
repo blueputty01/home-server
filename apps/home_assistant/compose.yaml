@@ -5,7 +5,7 @@ services:
     image: ghcr.io/home-assistant/home-assistant:stable
     restart: unless-stopped
     volumes:
-      - ${PWD}/config:/config
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
     privileged: true
@@ -15,7 +15,7 @@ services:
     container_name: esphome
     image: esphome/esphome
     volumes:
-      - ${PWD}/esphome:/config
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/esphome:/config
       - /etc/localtime:/etc/localtime:ro
     restart: always
     privileged: true
@@ -25,7 +25,7 @@ services:
     container_name: piper
     image: rhasspy/wyoming-piper
     volumes:
-      - '${PWD}/piper/data:/data'
+      - '${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/piper/data:/data'
     # https://rhasspy.github.io/piper-samples/
     command: --voice en_US-ryan-medium
     network_mode: host
@@ -34,7 +34,7 @@ services:
    container_name: whisper
    image: rhasspy/wyoming-whisper
    volumes:
-     - '${PWD}/whisper/data:/data'
+     - '${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/whisper/data:/data'
    command: --model small --language en --debug
    network_mode: host
   # 10400
