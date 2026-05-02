@@ -69,3 +69,9 @@ services:
       --wake-uri 'tcp://127.0.0.1:10400'
       --wake-word-name 'hey_jarvis'
     network_mode: host
+  tailscale:
+    extends:
+      file: ../tailscale.yaml
+      service: tailscale
+    network_mode: host
+    hostname: home
