@@ -1,31 +1,3 @@
-- id: '1762826642637'
-  alias: 45W turn on
-  description: ''
-  triggers:
-  - trigger: time
-    at: 06:00:00
-  conditions: []
-  actions:
-  - action: switch.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: switch.sonoff_s31_sonoff_s31_relay
-  mode: single
-- id: '1763878563135'
-  alias: 'Charge phone '
-  description: ''
-  triggers:
-  - trigger: time
-    at: 06:00:00
-  conditions: []
-  actions:
-  - action: switch.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: switch.sonoff_s312_sonoff_s31_relay
-  mode: single
 - id: '1763956335966'
   alias: Sleep
   description: ''
@@ -39,12 +11,9 @@
   - action: switch.turn_off
     metadata: {}
     target:
-      entity_id: switch.45w_sonoff_s31_relay
-    data: {}
-  - action: switch.turn_off
-    metadata: {}
-    target:
-      entity_id: switch.desk_lamp_sonoff_s31_relay
+      entity_id:
+      - switch.45w_sonoff_s31_relay
+      - switch.desk_lamp_sonoff_s31_relay
     data: {}
   mode: single
 - id: '1763956518010'
@@ -78,4 +47,67 @@
     command: Never mind
   conditions: []
   actions: []
+  mode: single
+- id: '1777756584397'
+  alias: Sound on
+  description: ''
+  triggers:
+  - trigger: time
+    at: '22:30:00'
+    weekday:
+    - sun
+    - mon
+    - sat
+    - tue
+    - wed
+    - thu
+    - fri
+  - trigger: time
+    at: 07:30:00
+    weekday:
+    - sun
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+  conditions: []
+  actions:
+  - action: timer.cancel
+    metadata: {}
+    target:
+      entity_id: timer.stop_noise
+    data: {}
+  - action: shell_command.start_noise
+    metadata: {}
+    data: {}
+  - action: timer.start
+    metadata: {}
+    target:
+      entity_id: timer.stop_noise
+    data:
+      duration:
+        hours: 0
+        minutes: 0
+        seconds: 10
+  mode: single
+- id: '1777756818348'
+  alias: Stop noise
+  description: ''
+  triggers:
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.stop_noise
+  conditions: []
+  actions:
+  - action: timer.cancel
+    metadata: {}
+    target:
+      entity_id: timer.stop_noise
+    data: {}
+  - action: shell_command.stop_noise
+    metadata: {}
+    data: {}
   mode: single

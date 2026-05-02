@@ -2,7 +2,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AUDIO_SCRIPT="$SCRIPT_DIR/fadeloop.sh"
-AUDIO_FILE="$SCRIPT_DIR/noise/white.mp3"
+AUDIO_FILE="$SCRIPT_DIR/res/white.mp3"
 PID_FILE="$SCRIPT_DIR/logs/audio_playback.pid"
 LOG_FILE="$SCRIPT_DIR/logs/audio_playback.log"
 
@@ -44,7 +44,7 @@ start_playback() {
     fi
 
     # Start the audio script in background
-    "$AUDIO_SCRIPT" "$AUDIO_FILE" &
+    nohup "$AUDIO_SCRIPT" "$AUDIO_FILE" > /dev/null 2>&1 &
     SCRIPT_PID=$!
     echo $SCRIPT_PID > "$PID_FILE"
     

@@ -16,3 +16,7 @@ http:
     - 127.0.0.1 # tailscale
 
 assist_pipeline:
+
+shell_command:
+  start_noise: "bash /config/scripts/noise/manager.sh start"
+  stop_noise: "bash /config/scripts/noise/manager.sh stop"
