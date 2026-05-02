@@ -1,3 +1,7 @@
-config/
-piper/
-whisper
+config/.*
+config/*.log*
+config/*.db
+config/tts
+config/*db-shm
+config/*db-wal
+__pycache__/
