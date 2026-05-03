@@ -21,4 +21,20 @@ services:
       - ${SSD_DATA_LOC:?error}/gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    network_mode: service:tailscale
+    networks:
+      - gitea
+  
+  runner:
+    image: gitea/runner:nightly
+    container_name: gitea-runner
+    env_file:
+      - .env
+    environment:
+      GITEA_INSTANCE_URL: http://gitea:3000
+      GITEA_RUNNER_NAME: local-runner
+    networks:
+      - gitea
+    volumes:
+      - ${SSD_DATA_LOC:?error}/gitea-runner:/data
+      # - ./config.yaml:/config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
