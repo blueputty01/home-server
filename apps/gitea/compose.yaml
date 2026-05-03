@@ -21,8 +21,8 @@ services:
       - ${SSD_DATA_LOC:?error}/gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    networks:
-      - gitea
+    network_mode: 
+      service:tailscale
   
   runner:
     image: gitea/runner:nightly
@@ -30,7 +30,7 @@ services:
     env_file:
       - .env
     environment:
-      GITEA_INSTANCE_URL: http://gitea:3000
+      GITEA_INSTANCE_URL: https://gitea.${TAILNET}
       GITEA_RUNNER_NAME: local-runner
     networks:
       - gitea
