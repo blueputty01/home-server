@@ -11,10 +11,10 @@ services:
       service: tailscale
     hostname: budget
   actual_server:
-    # image: actual_server_source:latest
-    build:
-      context: ./src
-      dockerfile: sync-server.Dockerfile
+    image: ghcr.io/actualbudget/actual:latest
+    # build:
+    #   context: ./src
+    #   dockerfile: sync-server.Dockerfile
     environment:
       - HTTPS
     volumes:
