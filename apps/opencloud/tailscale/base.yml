@@ -6,7 +6,7 @@ services:
       opencloud-net:
     environment:
       TS_AUTH_KEY: ${TS_OPENCLOUD_AUTHKEY?:error} 
-      TS_EXTRA_ARGS: ${TS_EXTRA_ARGS},tag:nextcloud
+      TS_EXTRA_ARGS: ${TS_EXTRA_ARGS},tag:opencloud
       TS_STATE_DIR: "/var/lib/tailscale"
     init: true
     healthcheck:
