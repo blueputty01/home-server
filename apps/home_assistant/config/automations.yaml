@@ -38,6 +38,12 @@
       skip_condition: true
     target:
       entity_id: automation.sleep
+  - action: automation.trigger
+    metadata: {}
+    target:
+      entity_id: automation.sound_on
+    data:
+      skip_condition: true
   mode: single
 - id: '1763956737552'
   alias: Never mind
@@ -62,6 +68,7 @@
     - wed
     - thu
     - fri
+    enabled: false
   - trigger: time
     at: 07:30:00
     weekday:
@@ -109,5 +116,21 @@
     data: {}
   - action: shell_command.stop_noise
     metadata: {}
+    data: {}
+  mode: single
+- id: '1777813721620'
+  alias: Turn on outlets
+  description: ''
+  triggers:
+  - trigger: time
+    at: 05:30:00
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id:
+      - switch.45w_sonoff_s31_relay
+      - switch.desk_lamp_sonoff_s31_relay
     data: {}
   mode: single
