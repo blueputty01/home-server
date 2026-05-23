@@ -64,9 +64,9 @@ services:
       - ${SSD_DATA_LOC}/${COMPOSE_PROJECT_NAME}/export:/usr/src/paperless/export
       # where documents can be imported from
       - ${PAPERLESS_INBOX}:/usr/src/paperless/consume
-    env_file: docker-compose.env
+    env_file: 
+      - docker-compose.env
+      - auth.env
     environment:
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_DBHOST: db
-      PAPERLESS_FILENAME_DATE_ORDER: MDY
-      PAPERLESS_DATE_ORDER: MDY
