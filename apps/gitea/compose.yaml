@@ -16,6 +16,11 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
+      - GITEA__indexer__REPO_INDEXER_ENABLED=true
+      - GITEA__indexer__REPO_INDEXER_PATH=indexers/repos.bleve
+      - GITEA__indexer__MAX_FILE_SIZE=1048576  # Max file size to index (1MB)
+      - GITEA__indexer__REPO_INDEXER_INCLUDE=  # Glob patterns to include
+      - GITEA__indexer__REPO_INDEXER_EXCLUDE=resources/bin/** # Glob patterns to exclude
     restart: always
     volumes:
       - ${SSD_DATA_LOC:?error}/gitea:/data
