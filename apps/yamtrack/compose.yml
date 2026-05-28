@@ -17,7 +17,7 @@ services:
       - SECRET=longstring
       - REDIS_URL=redis://redis:6379
       - SOCIAL_PROVIDERS=allauth.socialaccount.providers.openid_connect
-      - SOCIALACCOUNT_PROVIDERS={"openid_connect":{"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"authentik","name":"Authentik","client_id":${YAMTRACK_CLIENT_ID},"secret":${YAMTRACK_CLIENT_SECRET},"settings":{"server_url":"https://auth.${TAILNET}/application/o/yamtrack/.well-known/openid-configuration"}}]}}
+      - SOCIALACCOUNT_PROVIDERS={"openid_connect":{"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"authentik","name":"Authentik","client_id":${YAMTRACK_CLIENT_ID},"secret":${YAMTRACK_SECRET},"settings":{"server_url":"https://auth.${TAILNET}/application/o/yamtrack/.well-known/openid-configuration"}}]}}
     volumes:
       - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/db/state:/yamtrack/db
     network_mode: service:tailscale
