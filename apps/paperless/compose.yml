@@ -67,6 +67,7 @@ services:
     env_file: 
       - docker-compose.env
       - auth.env
+      - locs.env
     environment:
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_DBHOST: db
