@@ -14,8 +14,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/config:/var/syncthing/config
-      - ${OBSIDIAN_LOCATION}:/var/syncthing/obsidian
+      - ${SSD_DATA_LOC:?error}/${COMPOSE_PROJECT_NAME}/:/var/syncthing/
     network_mode:
       service:tailscale
     restart: unless-stopped
